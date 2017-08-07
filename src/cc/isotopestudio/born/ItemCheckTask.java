@@ -5,19 +5,31 @@ package cc.isotopestudio.born;
  */
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import static cc.isotopestudio.born.PlayerListener.*;
 
 public class ItemCheckTask extends BukkitRunnable {
     @Override
     public void run() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            for (int i = 0; i < player.getInventory().getContents().length; i++) {
-                ItemStack item = player.getInventory().getContents()[i];
-                if (item == null || item.getType() == Material.AIR) continue;
-
+            if (!player.getWorld().getName().equals("yomi")) {
+                PlayerInventory inv = player.getInventory();
+                ItemStack item = inv.getItem(0);
+                if (item != null && item.isSimilar(TPITEM)) {
+                    inv.setItem(0, null);
+                }
+                item = inv.getItem(4);
+                if (item != null && item.isSimilar(BACKITEM)) {
+                    inv.setItem(4, null);
+                }
+                item = inv.getItem(8);
+                if (item != null && item.isSimilar(BEDWARPITEM)) {
+                    inv.setItem(8, null);
+                }
             }
         }
     }

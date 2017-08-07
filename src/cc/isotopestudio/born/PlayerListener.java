@@ -27,11 +27,11 @@ import static cc.isotopestudio.born.Born.plugin;
 
 class PlayerListener implements Listener {
 
-    private static final ItemStack BEDWARPITEM = Util.buildItem(Material.BED, false,
+    static final ItemStack BEDWARPITEM = Util.buildItem(Material.BED, false,
             S.toBoldGold("床地标"), S.toItalicYellow("右键打开"), S.toRed("不可移动"));
-    private static final ItemStack BACKITEM = Util.buildItem(Material.SKULL_ITEM, (short) 1, false,
+    static final ItemStack BACKITEM = Util.buildItem(Material.SKULL_ITEM, (short) 1, false,
             S.toBoldDarkAqua("回到死亡点"), S.toItalicYellow("右键使用"), S.toItalicYellow("花费100游戏币"), S.toRed("不可移动"));
-    private static final ItemStack TPITEM = Util.buildItem(Material.GRASS, false,
+    static final ItemStack TPITEM = Util.buildItem(Material.GRASS, false,
             S.toBoldGreen("随机传送"), S.toItalicYellow("右键使用"), S.toRed("不可移动"));
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -97,7 +97,15 @@ class PlayerListener implements Listener {
             public void run() {
                 try {
                     p.teleport(Bukkit.getWorld("yomi").getSpawnLocation());
-                    addItem(p);
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                addItem(p);
+                            } catch (Exception ignored) {
+                            }
+                        }
+                    }.runTaskLater(plugin, 2);
                 } catch (Exception ignored) {
                 }
             }
@@ -134,23 +142,28 @@ class PlayerListener implements Listener {
 
     @EventHandler
     public void onChangeWorld(PlayerChangedWorldEvent event) {
-        if (event.getPlayer().getWorld().getName().equals("yomi")) {
-            addItem(event.getPlayer());
-        } else {
-            PlayerInventory inv = event.getPlayer().getInventory();
-            ItemStack item = inv.getItem(0);
-            if (item != null && item.isSimilar(TPITEM)) {
-                inv.setItem(0, null);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (event.getPlayer().getWorld().getName().equals("yomi")) {
+                    addItem(event.getPlayer());
+                } else {
+                    PlayerInventory inv = event.getPlayer().getInventory();
+                    ItemStack item = inv.getItem(0);
+                    if (item != null && item.isSimilar(TPITEM)) {
+                        inv.setItem(0, null);
+                    }
+                    item = inv.getItem(4);
+                    if (item != null && item.isSimilar(BACKITEM)) {
+                        inv.setItem(4, null);
+                    }
+                    item = inv.getItem(8);
+                    if (item != null && item.isSimilar(BEDWARPITEM)) {
+                        inv.setItem(8, null);
+                    }
+                }
             }
-            item = inv.getItem(4);
-            if (item != null && item.isSimilar(BACKITEM)) {
-                inv.setItem(4, null);
-            }
-            item = inv.getItem(8);
-            if (item != null && item.isSimilar(BEDWARPITEM)) {
-                inv.setItem(8, null);
-            }
-        }
+        }.runTaskLater(plugin, 4);
     }
 
     @EventHandler

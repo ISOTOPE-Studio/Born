@@ -33,7 +33,7 @@ public class Born extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
 
-        new ItemCheckTask().runTaskTimer(this, 20, 100);
+        new ItemCheckTask().runTaskTimer(this, 20, 20 * 10);
 
         getLogger().info(pluginName + "成功加载!");
         getLogger().info(pluginName + "由ISOTOPE Studio制作!");
